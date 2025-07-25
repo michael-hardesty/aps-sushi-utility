@@ -230,7 +230,7 @@
         successCount.textContent = '0';
         failedCount.textContent = '0';
 
-        console.log('🚀 Starting SUSHI data harvest...');
+        console.log('Starting SUSHI data harvest...');
         console.log('Check the console below for detailed URL logging');
 
         try {
@@ -246,7 +246,7 @@
 
           const payload = { accounts, begin_date: begin, end_date: end, format, report_type: reportType };
           
-          console.log('📋 Request Parameters:');
+          console.log('Request Parameters:');
           console.log('  Format:', format);
           console.log('  Report Type:', reportType);
           console.log('  Date Range:', begin, 'to', end);
@@ -291,7 +291,7 @@
                     failedCount.textContent = data.failed;
                   } else if (data.type === 'url_log') {
                     // *** NEW: Log URLs to browser console ***
-                    console.log(`🌐 API Call ${data.accountIndex}/${data.totalAccounts}`);
+                    console.log(`API Call ${data.accountIndex}/${data.totalAccounts}`);
                     console.log(`   Account: ${data.account}`);
                     console.log(`   URL: ${data.url}`);
                     console.log('');
@@ -303,7 +303,7 @@
                     const blob = new Blob([data.csv], { type: 'text/csv' });
                     const url = URL.createObjectURL(blob);
 
-                    console.log('✅ Harvest Complete!');
+                    console.log('Harvest Complete!');
                     console.log(`   Processed: ${data.successful}/${data.total} accounts`);
                     console.log(`   Total Usage: ${data.summary.totalUsage.toLocaleString()}`);
                     console.log('');
