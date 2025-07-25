@@ -230,6 +230,9 @@
         successCount.textContent = '0';
         failedCount.textContent = '0';
 
+        console.log('🚀 Starting SUSHI data harvest...');
+        console.log('Check the console below for detailed URL logging');
+
         try {
           const accountsText = document.getElementById('accounts').value.trim();
           const [begin, end] = [document.getElementById('beginDate').value, document.getElementById('endDate').value];
@@ -242,6 +245,13 @@
           }).filter(a => a.requestor_id && a.customer_id);
 
           const payload = { accounts, begin_date: begin, end_date: end, format, report_type: reportType };
+          
+          console.log('📋 Request Parameters:');
+          console.log('  Format:', format);
+          console.log('  Report Type:', reportType);
+          console.log('  Date Range:', begin, 'to', end);
+          console.log('  Accounts:', accounts.length);
+          console.log('');
           
           // Use EventSource for SSE
           const response = await fetch(`${WORKER_URL}/harvest-stream`, {
@@ -279,6 +289,12 @@
                     etaText.textContent = `ETA: ${data.estimatedTimeRemaining}`;
                     successCount.textContent = data.successful;
                     failedCount.textContent = data.failed;
+                  } else if (data.type === 'url_log') {
+                    // *** NEW: Log URLs to browser console ***
+                    console.log(`🌐 API Call ${data.accountIndex}/${data.totalAccounts}`);
+                    console.log(`   Account: ${data.account}`);
+                    console.log(`   URL: ${data.url}`);
+                    console.log('');
                   } else if (data.type === 'complete') {
                     // Process complete
                     progressContainer.style.display = 'none';
@@ -286,6 +302,11 @@
                     
                     const blob = new Blob([data.csv], { type: 'text/csv' });
                     const url = URL.createObjectURL(blob);
+
+                    console.log('✅ Harvest Complete!');
+                    console.log(`   Processed: ${data.successful}/${data.total} accounts`);
+                    console.log(`   Total Usage: ${data.summary.totalUsage.toLocaleString()}`);
+                    console.log('');
 
                     resultsContent.innerHTML = `
                       <h3>✅ Harvest Complete!</h3>
@@ -305,7 +326,7 @@
             }
           }
         } catch (err) {
-          console.error("Error:", err);
+          console.error("❌ Error:", err);
           progressContainer.style.display = 'none';
           resultsDiv.style.display = 'block';
           resultsContent.innerHTML = `<h3>❌ Error</h3><pre>${err.message}</pre>`;
